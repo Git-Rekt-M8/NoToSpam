@@ -1,2 +1,2 @@
-** ADVSTAT project
+## ADVSTAT project
 Naive Bayesian Anti-Spam Filtering
