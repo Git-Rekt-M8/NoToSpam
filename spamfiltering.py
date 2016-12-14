@@ -5,12 +5,17 @@ from random import randint
 from Word import Word
 
 words_dic = {}
+spam_count = 0
+ham_count = 0
 
 # Load Data
 def load_files():
+    global spam_count
+    global ham_count
+
     email_dir = 'emails/bare'
     # 10-fold cross validation means repeat 10 times: divide data into 10, use 9 for training, 1 for testing
-    test_folder = 1 #randint(1, 10)
+    test_folder = 1 # randint(1, 10)
     print test_folder
 
     for num in range(1, 11):
@@ -22,6 +27,9 @@ def load_files():
                 email_type = 'ham'
                 if 'sp' in filename:
                     email_type = 'spam'
+                    spam_count += 1
+                else:
+                    ham_count += 1
                 email_file = open(email_dir + part_folder + "/" + filename, "r")
                 content = email_file.read()
                 train(content, email_type)
@@ -29,9 +37,9 @@ def load_files():
 
 
 def train(content, email_type):
-    #print 'choo choo motherfucker'
+    # print 'choo choo motherfucker'
     allwords_array = getWordsFromEmail(content)
-    #print(allwords_array)
+    # print(allwords_array)
     words_array = set(allwords_array) #remove duplicates
     for word in words_array:
         word_obj = words_dic.get(word, None)
@@ -53,7 +61,8 @@ def getWordsFromEmail(content):
 # MAIN
 load_files()
 #print words_dic['Subject'].getSpamOccur()
-print "Value : %d" %  words_dic['subject'].getSpamOccur()
+#print "Value : %d" %  words_dic['subject'].getSpamOccur()
+#print spam_count
 
 
 
