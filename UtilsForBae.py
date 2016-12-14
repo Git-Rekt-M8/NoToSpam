@@ -6,11 +6,11 @@ def computeForSpamProbability(spam_count, ham_count):
 def computeForHamProbability(spam_count, ham_count):
     return ham_count/(spam_count+ham_count)
 
-def computeForSpamWordProbability(occurence, spam_count):
-    return (occurence+1)/(spam_count+2)
+def computeForSpamWordProbability(occurence, spam_count, epsilon):
+    return (occurence+1*epsilon)/(spam_count+2*epsilon)
 
-def computeForHamWordProbability(occurence, ham_count):
-    return (occurence+1)/(ham_count+2)
+def computeForHamWordProbability(occurence, ham_count, epsilon):
+    return (occurence+1*epsilon)/(ham_count+2*epsilon)
 
 def computeProbabilityForListOfWords(attribs_dic, word_list, email_type):
     answer = 1.0

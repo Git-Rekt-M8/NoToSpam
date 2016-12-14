@@ -15,6 +15,7 @@ from Word import Word
 
 threshold_lambda = 1.0
 num_of_top_attributes = 50
+epsilon = 1.0
 
 words_dic = {}
 SPAM_PROBABILITY = 0
@@ -23,7 +24,7 @@ HAM_PROBABILITY = 0
 attribs_dic = {}
 spam_count = 0.0
 ham_count = 0.0
-email_dir = 'emails/bare'
+email_dir = 'emails/lemm'
 part_folder = '/part'
 
 # tests
@@ -91,8 +92,8 @@ def init(test_folder_index):
     HAM_PROBABILITY = bae.computeForHamProbability(spam_count, ham_count)
 
     for word, word_obj in words_dic.iteritems():
-        words_dic[word].setSpamProbability(bae.computeForSpamWordProbability(word_obj.getSpamOccur(), spam_count))
-        words_dic[word].setHamProbability(bae.computeForHamWordProbability(word_obj.getHamOccur(), ham_count))
+        words_dic[word].setSpamProbability(bae.computeForSpamWordProbability(word_obj.getSpamOccur(), spam_count, epsilon))
+        words_dic[word].setHamProbability(bae.computeForHamWordProbability(word_obj.getHamOccur(), ham_count, epsilon))
         #print "Value : %d" % words_dic['subject'].getSpamOccur()
 
     compute()
@@ -205,21 +206,21 @@ for lambda_current in lambda_values:
     for filter_config in filter_types:
 
         # set no. of top attributes
-        if lambda_current == 1:
-            if filter_config == 'bare' or filter_config == 'stop':
-                num_of_top_attributes = 50
-            else:
-                num_of_top_attributes = 100
-        elif lambda_current == 9:
-            if filter_config == 'bare' or filter_config == 'stop':
-                num_of_top_attributes = 200
-            else:
-                num_of_top_attributes = 100
-        elif lambda_current == 999:
-            if filter_config == 'bare' or filter_config == 'stop':
-                num_of_top_attributes = 200
-            else:
-                num_of_top_attributes = 300
+        # if lambda_current == 1:
+        #     if filter_config == 'bare' or filter_config == 'stop':
+        #         num_of_top_attributes = 50
+        #     else:
+        #         num_of_top_attributes = 100
+        # elif lambda_current == 9:
+        #     if filter_config == 'bare' or filter_config == 'stop':
+        #         num_of_top_attributes = 200
+        #     else:
+        #         num_of_top_attributes = 100
+        # elif lambda_current == 999:
+        #     if filter_config == 'bare' or filter_config == 'stop':
+        #         num_of_top_attributes = 200
+        #     else:
+        #         num_of_top_attributes = 300
 
         email_dir = 'emails/' + filter_config
         print 'Testing %s filter' % filter_config
