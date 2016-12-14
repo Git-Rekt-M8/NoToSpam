@@ -14,12 +14,12 @@ from Word import Word
 words_dic = {}
 SPAM_PROBABILITY = 0
 HAM_PROBABILITY = 0
-spam_count = 0
-ham_count = 0
 word_list = ['hi']
 attribs_dic = {}
 spam_count = 0.0
 ham_count = 0.0
+email_dir = 'emails/bare'
+part_folder = '/part'
 
 # Load Data
 def init(test_folder_index):
@@ -28,7 +28,6 @@ def init(test_folder_index):
     global SPAM_PROBABILITY
     global  HAM_PROBABILITY
 
-    email_dir = 'emails/bare'
     # 10-fold cross validation means repeat 10 times: divide data into 10, use 9 for training, 1 for testing
     #test_folder_index = 1 # randint(1, 10)
     print test_folder_index
@@ -156,9 +155,11 @@ def testEmail(test_email):
     #get bayesian
 
 # MAIN
-test_folder_index = 1;
+test_folder_index = 1
 init(test_folder_index)
-testEmail("spmsga101.txt")
+
+for filename in os.listdir(email_dir + part_folder + str(test_folder_index)):
+    testEmail(filename)
 
 
 #print "Value : %f" %  words_dic['hello'].getHamProbability()
