@@ -1,10 +1,14 @@
 import os
 import re
+import UtilsForBae as bae
 from random import randint
 
 from Word import Word
 
 words_dic = {}
+SPAM_PROBABILITY = 0
+HAM_PROBABILITY = 0
+
 
 # Load Data
 def load_files():
