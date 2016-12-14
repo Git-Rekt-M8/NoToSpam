@@ -1,9 +1,10 @@
 import os
+import re
 from random import randint
 
-from Email import Email
+from Word import Word
 
-folderList = []
+words_dic = {}
 
 # Load Data
 def load_files():
@@ -11,6 +12,7 @@ def load_files():
     # 10-fold cross validation means repeat 10 times: divide data into 10, use 9 for training, 1 for testing
     test_folder = 1 #randint(1, 10)
     print test_folder
+
     for num in range(1, 11):
         if num != test_folder:
             part_num = num
@@ -21,25 +23,38 @@ def load_files():
                 if 'sp' in filename:
                     email_type = 'spam'
                 email_file = open(email_dir + part_folder + "/" + filename, "r")
-                content = email_file.readlines()
-                #train(content, email_type)
+                content = email_file.read()
+                train(content, email_type)
                 #print email_file
 
 
 def train(content, email_type):
-    print 'choo choo motherfucker'
-    email = Email()
+    #print 'choo choo motherfucker'
+    allwords_array = getWordsFromEmail(content)
+    #print(allwords_array)
+    words_array = set(allwords_array) #remove duplicates
+    for word in words_array:
+        word_obj = words_dic.get(word, None)
+        if word_obj is None:
+            word_obj = Word()
 
-    if email_type == 'sp':
-        email.addSpamEmail(content)
-    else:
-        email.addLegitimateEmail(content)
+        if email_type == 'spam':
+            word_obj.addToSpamOccur(1)
+        else:
+            word_obj.addToHamOccur(1)
+        words_dic[word] = word_obj
 
-    folderList.append(email)
 
+def getWordsFromEmail(content):
 
+    #return re.findall(r'[^\\W_]+', content, re.M | re.I)
+    #return re.findall(r'[^\\W_]+', content)
+    #content = content.translate(None, content.punctuation)
+    content = re.sub(r'[^\w\s]', '', content)
+    return content.split()
 load_files()
-print 'hi'
+#print words_dic['Subject'].getSpamOccur()
+print "Value : %d" %  words_dic['Subject'].getSpamOccur()
 
 
 
