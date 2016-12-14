@@ -53,7 +53,7 @@ def init(test_folder_index):
 
     # 10-fold cross validation means repeat 10 times: divide data into 10, use 9 for training, 1 for testing
     #test_folder_index = 1 # randint(1, 10)
-    print 'Testing part %s' % test_folder_index
+    # print 'Testing part %s' % test_folder_index
 
     words_dic.clear()
     SPAM_PROBABILITY = 0
@@ -92,6 +92,7 @@ def init(test_folder_index):
     HAM_PROBABILITY = bae.computeForHamProbability(spam_count, ham_count)
 
     for word, word_obj in words_dic.iteritems():
+        # epsilon = (spam_count + ham_count) / N1X <- kung ilang emails siya lumabas sa testing folder
         words_dic[word].setSpamProbability(bae.computeForSpamWordProbability(word_obj.getSpamOccur(), spam_count, epsilon))
         words_dic[word].setHamProbability(bae.computeForHamWordProbability(word_obj.getHamOccur(), ham_count, epsilon))
         #print "Value : %d" % words_dic['subject'].getSpamOccur()
@@ -200,86 +201,63 @@ def testEmail(test_email):
 # MAIN
 filter_types = ['bare','lemm','lemm_stop','stop']
 lambda_values = [1,9,999]
+max_num_of_top_attributes = 150
 
 for lambda_current in lambda_values:
     #for each filter type
     for filter_config in filter_types:
+        num_of_top_attributes = 50 # reinitialize num of attributes
+        while num_of_top_attributes <= max_num_of_top_attributes:
 
-        # set no. of top attributes
-        # if lambda_current == 1:
-        #     if filter_config == 'bare' or filter_config == 'stop':
-        #         num_of_top_attributes = 50
-        #     else:
-        #         num_of_top_attributes = 100
-        # elif lambda_current == 9:
-        #     if filter_config == 'bare' or filter_config == 'stop':
-        #         num_of_top_attributes = 200
-        #     else:
-        #         num_of_top_attributes = 100
-        # elif lambda_current == 999:
-        #     if filter_config == 'bare' or filter_config == 'stop':
-        #         num_of_top_attributes = 200
-        #     else:
-        #         num_of_top_attributes = 300
+            email_dir = 'emails/' + filter_config
+            print 'TESTING'
+            print 'Lambda Value: %d' % lambda_current
+            print 'Number of Attributes: %d' % num_of_top_attributes
+            print 'Filter Configuration: %s' % filter_config.capitalize()
+            # for each folder
+            for num in range(1, 11):
+                test_folder_index = num
+                init(test_folder_index)
 
-        email_dir = 'emails/' + filter_config
-        print 'Testing %s filter' % filter_config
-        # for each folder
-        for num in range(1, 11):
-            test_folder_index = num
-            init(test_folder_index)
+                email_count = 0
+                #for each email
+                for filename in os.listdir(email_dir + part_folder + str(test_folder_index)):
+                    # check if spam or ham indication
+                    if 'sp' in filename:
+                        test_email_type = 'spam'
+                        spam_true_count +=1
+                    else:
+                        test_email_type = 'ham'
+                        ham_true_count +=1
 
-            email_count = 0
-            #for each email
-            for filename in os.listdir(email_dir + part_folder + str(test_folder_index)):
-                # check if spam or ham indication
-                if 'sp' in filename:
-                    test_email_type = 'spam'
-                    spam_true_count +=1
-                else:
-                    test_email_type = 'ham'
-                    ham_true_count +=1
+                    bayesian_result = testEmail(email_dir + part_folder + str(test_folder_index) + "/" + filename)
 
-                bayesian_result = testEmail(email_dir + part_folder + str(test_folder_index) + "/" + filename)
+                    # update results for analysis
+                    if bayesian_result == 'spam' and test_email_type == 'spam':
+                        spam_correct_count+=1
+                    elif bayesian_result == 'ham' and test_email_type == 'ham':
+                        ham_correct_count+=1
+                    elif bayesian_result == 'spam' and test_email_type == 'ham':
+                        spam_fp_count+=1
+                    elif bayesian_result == 'ham' and test_email_type == 'spam':
+                        spam_fn_count+=1
 
-                # update results for analysis
-                if bayesian_result == 'spam' and test_email_type == 'spam':
-                    spam_correct_count+=1
-                elif bayesian_result == 'ham' and test_email_type == 'ham':
-                    ham_correct_count+=1
-                elif bayesian_result == 'spam' and test_email_type == 'ham':
-                    spam_fp_count+=1
-                elif bayesian_result == 'ham' and test_email_type == 'spam':
-                    spam_fn_count+=1
+                spam_recall.append(spam_correct_count / (spam_correct_count + spam_fn_count))
+                spam_precision.append(spam_correct_count / (spam_correct_count + spam_fp_count))
+                weighted_accuracy.append((threshold_lambda*ham_correct_count+spam_correct_count) / (threshold_lambda * ham_true_count + spam_true_count))
+                baseline_weighted_accuracy.append((threshold_lambda*ham_true_count) / (threshold_lambda * ham_true_count + spam_true_count))
+                tcr.append(spam_true_count / (threshold_lambda * spam_fn_count + spam_fp_count))
 
-            spam_recall.append(spam_correct_count / (spam_correct_count + spam_fn_count))
-            spam_precision.append(spam_correct_count / (spam_correct_count + spam_fp_count))
-            weighted_accuracy.append((threshold_lambda*ham_correct_count+spam_correct_count) / (threshold_lambda * ham_true_count + spam_true_count))
-            baseline_weighted_accuracy.append((threshold_lambda*ham_true_count) / (threshold_lambda * ham_true_count + spam_true_count))
-            tcr.append(spam_true_count / (threshold_lambda * spam_fn_count + spam_fp_count))
+            print 'RESULTS'
+            print_value = (sum(spam_recall)/float(len(spam_recall)))*100
+            print 'Spam Recall: %.2f %%' % print_value
+            print_value = (sum(spam_precision)/float(len(spam_precision)))*100
+            print 'Spam Precision: %.2f %%'  % print_value
+            print_value = (sum(weighted_accuracy)/len(weighted_accuracy))*100
+            print 'Weighted Accuracy: %.2f %%' % print_value
+            print_value = (sum(baseline_weighted_accuracy)/len(baseline_weighted_accuracy))*100
+            print 'Baseline Weighted Accuaracy: %.2f %%' % print_value
+            print_value = (sum(tcr)/len(tcr))
+            print 'TCR: %.2f \n' % print_value
 
-        print '\nLambda Value: %d' % lambda_current
-        print 'Number of Attributes: %d' % num_of_top_attributes
-
-        print 'Filter Configuration: %s' % filter_config.capitalize()
-        print_value = (sum(spam_recall)/float(len(spam_recall)))*100
-        print 'Spam Recall: %.2f %%' % print_value
-        print_value = (sum(spam_precision)/float(len(spam_precision)))*100
-        print 'Spam Precision: %.2f %%'  % print_value
-        print_value = (sum(weighted_accuracy)/len(weighted_accuracy))*100
-        print 'Weighted Accuracy: %.2f %%' % print_value
-        print_value = (sum(baseline_weighted_accuracy)/len(baseline_weighted_accuracy))*100
-        print 'Baseline Weighted Accuaracy: %.2f %%' % print_value
-        print_value = (sum(tcr)/len(tcr))
-        print 'TCR: %.2f \n' % print_value
-
-
-
-#print "Value : %f" %  words_dic['hello'].getHamProbability()
-
-#print words_dic['Subject'].getSpamOccur()
-#print "Value : %d" %  words_dic['subject'].getSpamOccur()
-#print spam_count
-
-
-
+            num_of_top_attributes += 50 # step of 50
