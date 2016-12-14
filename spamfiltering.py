@@ -1,6 +1,12 @@
 import os
 import re
 import UtilsForBae as bae
+import math
+
+import operator
+import itertools
+
+from decimal import Decimal
 from random import randint
 
 from Word import Word
@@ -11,6 +17,9 @@ HAM_PROBABILITY = 0
 spam_count = 0
 ham_count = 0
 word_list = ['hi']
+attribs_dic = {}
+spam_count = 0.0
+ham_count = 0.0
 
 # Load Data
 def init(test_folder_index):
@@ -23,6 +32,10 @@ def init(test_folder_index):
     # 10-fold cross validation means repeat 10 times: divide data into 10, use 9 for training, 1 for testing
     #test_folder_index = 1 # randint(1, 10)
     print test_folder_index
+
+    test_folder = 1
+    print test_folder
+
 
     for num in range(1, 11):
         if num != test_folder_index:
@@ -51,6 +64,9 @@ def init(test_folder_index):
         words_dic[word].setHamProbability(bae.computeForHamWordProbability(word_obj.getHamOccur(), ham_count))
         #print "Value : %d" % words_dic['subject'].getSpamOccur()
 
+    compute()
+    getTopAttribs(50)
+
 def train(content, email_type):
     # print 'choo choo motherfucker'
     allwords_array = getWordsFromEmail(content)
@@ -60,6 +76,7 @@ def train(content, email_type):
         word_obj = words_dic.get(word, None)
         if word_obj is None:
             word_obj = Word()
+            word_obj.setContent(word)
 
         if email_type == 'spam':
             word_obj.addToSpamOccur(1)
@@ -68,8 +85,48 @@ def train(content, email_type):
         words_dic[word] = word_obj
 
 
+def compute():
+    total = ham_count + spam_count
+    for key, value in words_dic.iteritems():
+        spam_occur = value.getSpamOccur()
+        spam_notoccur = spam_count - spam_occur
+        ham_occur = value.getHamOccur()
+        ham_notoccur = total - value.getHamOccur()
+        # print Decimal((total * ham_occur) / ((spam_occur + ham_occur) * (ham_occur + ham_notoccur)))
+        try:
+            mutual_info = (spam_occur / total) * math.log((total * spam_occur) / ((spam_occur + ham_occur) * (spam_occur + spam_notoccur)))
+        except:
+            mutual_info = 0.0
+
+        try:
+            mutual_info += (spam_notoccur / total) * math.log((total * spam_notoccur) / ((spam_notoccur + ham_notoccur) * (spam_occur + spam_notoccur)))
+        except:
+            mutual_info += 0.0
+
+        try:
+            mutual_info += (ham_occur / total) * math.log((total * ham_occur) / ((spam_occur + ham_occur) * (ham_occur + ham_notoccur)))
+        except:
+            mutual_info += 0.0
+
+        try:
+            mutual_info += (ham_notoccur / total) * math.log((total * ham_notoccur) / ((spam_notoccur + ham_notoccur) * (ham_occur + ham_notoccur)))
+        except:
+            mutual_info += 0.0
+        # print mutual_info
+        words_dic[key].setMutualInfo(mutual_info)
+
+
+def getTopAttribs(n):
+    sorted_dic = sorted(words_dic.values(), key=lambda word: word.mutualInfo, reverse=True)
+    top_n = sorted_dic[:n]
+    for word in top_n:
+        attribs_dic[word.getContent()] = word
+        print str(word.getContent()) + ' = ' + str(word.getMutualInfo())
+    return attribs_dic
+
 def getWordsFromEmail(content):
-    content = re.sub(r'[^\w\s]', '', content)
+    #content = re.sub(r'[^\w\s]', '', content)
+    content = re.sub('[^a-zA-Z]+', ' ', content)
     content = content.lower()
     return content.split()
 
@@ -77,10 +134,11 @@ def testEmail(test_email):
     email_file = open('emails/bare' + "/part1" + "/" + test_email, "r")
     content = email_file.read()
     word_list = getWordsFromEmail(content)
+    word_list = set(word_list)  # remove duplicates
 
     # get top n
     # attribs_dic = bae.getTopAttribs(50)
-    attribs_dic = ['hi']
+    #attribs_dic = ['hi']
     word_spam_prob = bae.computeProbabilityForListOfWords(attribs_dic, word_list, "spam")
     word_ham_prob = bae.computeProbabilityForListOfWords(attribs_dic, word_list, "ham")
 
@@ -93,24 +151,21 @@ def testEmail(test_email):
     baye_probability = bae.computeBayesianProbability(SPAM_PROBABILITY, HAM_PROBABILITY, word_spam_prob, word_ham_prob,
                                                       email_type)
 
+    print 'answer??'
     print baye_probability
     #get bayesian
-
-
 
 # MAIN
 test_folder_index = 1;
 init(test_folder_index)
-
-testEmail("3-1msg1.txt")
+testEmail("spmsga101.txt")
 
 
 #print "Value : %f" %  words_dic['hello'].getHamProbability()
+
 #print words_dic['Subject'].getSpamOccur()
 #print "Value : %d" %  words_dic['subject'].getSpamOccur()
 #print spam_count
-print SPAM_PROBABILITY
-print HAM_PROBABILITY
 
 
 

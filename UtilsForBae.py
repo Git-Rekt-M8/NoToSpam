@@ -16,6 +16,7 @@ def computeProbabilityForListOfWords(attribs_dic, word_list, email_type):
     answer = 1.0
     for word, word_obj in attribs_dic.iteritems():
         isWordIncluded = False
+
         for word_list_word in word_list:
             if word == word_list_word:
                 isWordIncluded = True

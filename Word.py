@@ -4,6 +4,8 @@ class Word:
         self.hamOccurence = 0
         self.spamProbability = 0.0
         self.hamProbability = 0.0
+        self.content = ''
+        self.mutualInfo = 0.0
 
     def getSpamProbability(self):
         return self.spamProbability
@@ -34,3 +36,16 @@ class Word:
 
     def setHamOccur(self, n):
         self.hamOccurence = n
+
+    def getMutualInfo(self):
+        return self.mutualInfo
+
+    def setMutualInfo(self, n):
+        self.mutualInfo = n
+
+    def getContent(self):
+        return self.content
+
+    def setContent(self, n):
+        self.content = n
+
