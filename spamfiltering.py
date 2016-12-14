@@ -46,15 +46,14 @@ def train(content, email_type):
 
 
 def getWordsFromEmail(content):
-
-    #return re.findall(r'[^\\W_]+', content, re.M | re.I)
-    #return re.findall(r'[^\\W_]+', content)
-    #content = content.translate(None, content.punctuation)
     content = re.sub(r'[^\w\s]', '', content)
+    content = content.lower()
     return content.split()
+
+# MAIN
 load_files()
 #print words_dic['Subject'].getSpamOccur()
-print "Value : %d" %  words_dic['Subject'].getSpamOccur()
+print "Value : %d" %  words_dic['subject'].getSpamOccur()
 
 
 
