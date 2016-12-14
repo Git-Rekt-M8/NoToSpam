@@ -2,7 +2,20 @@ class Word:
     def __init__(self):
         self.spamOccurence = 0
         self.hamOccurence = 0
+        self.spamProbability = 0.0
+        self.hamProbability = 0.0
 
+    def getSpamProbability(self):
+        return self.spamProbability
+
+    def setSpamProbability(self, n):
+        self.spamProbability = n
+
+    def getHamProbability(self):
+        return self.hamProbability
+
+    def setHamProbability(self, n):
+        self.hamProbability = n
 
     def addToSpamOccur(self, n):
         self.spamOccurence +=n
