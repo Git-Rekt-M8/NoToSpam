@@ -64,7 +64,7 @@ def init(test_folder_index):
         words_dic[word].setHamProbability(bae.computeForHamWordProbability(word_obj.getHamOccur(), ham_count))
         #print "Value : %d" % words_dic['subject'].getSpamOccur()
 
-    compute()
+    computeMI()
     getTopAttribs(100)
 
 def train(content, email_type):
@@ -85,7 +85,7 @@ def train(content, email_type):
         words_dic[word] = word_obj
 
 
-def compute():
+def computeMI():
     total = ham_count + spam_count
     for key, value in words_dic.iteritems():
         spam_occur = value.getSpamOccur()
