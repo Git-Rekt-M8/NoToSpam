@@ -1,6 +1,9 @@
 import os
 from random import randint
 
+from Email import Email
+
+folderList = []
 
 # Load Data
 def load_files():
@@ -25,6 +28,15 @@ def load_files():
 
 def train(content, email_type):
     print 'choo choo motherfucker'
+    email = Email()
+
+    if email_type == 'sp':
+        email.addSpamEmail(content)
+    else:
+        email.addLegitimateEmail(content)
+
+    folderList.append(email)
+
 
 load_files()
 print 'hi'
