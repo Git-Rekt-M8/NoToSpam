@@ -19,7 +19,7 @@ attribs_dic = {}
 threshold_lambda = 1.0
 spam_count = 0.0
 ham_count = 0.0
-email_dir = 'emails/bare'
+email_dir = 'emails/lemm'
 part_folder = '/part'
 
 # Load Data
@@ -65,7 +65,7 @@ def init(test_folder_index):
         #print "Value : %d" % words_dic['subject'].getSpamOccur()
 
     compute()
-    getTopAttribs(50)
+    getTopAttribs(100)
 
 def train(content, email_type):
     # print 'choo choo motherfucker'
