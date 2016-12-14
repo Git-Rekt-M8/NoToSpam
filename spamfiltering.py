@@ -19,7 +19,7 @@ def load_files():
                     email_type = 'spam'
                 email_file = open(email_dir + part_folder + "/" + filename, "r")
                 content = email_file.readlines()
-                train(content, email_type)
+                #train(content, email_type)
                 #print email_file
 
 
