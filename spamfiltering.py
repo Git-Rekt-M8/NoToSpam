@@ -3,6 +3,7 @@ import os
 import re
 import UtilsForBae as bae
 import math
+import csv
 
 import operator
 import itertools
@@ -41,6 +42,9 @@ spam_precision = []
 weighted_accuracy = []
 baseline_weighted_accuracy = []
 tcr = []
+
+#csv
+csv_data_list = []
 
 
 
@@ -201,7 +205,7 @@ def testEmail(test_email):
 # MAIN
 filter_types = ['bare','lemm','lemm_stop','stop']
 lambda_values = [1,9,999]
-max_num_of_top_attributes = 150
+max_num_of_top_attributes = 700
 
 for lambda_current in lambda_values:
     #for each filter type
@@ -248,16 +252,30 @@ for lambda_current in lambda_values:
                 baseline_weighted_accuracy.append((threshold_lambda*ham_true_count) / (threshold_lambda * ham_true_count + spam_true_count))
                 tcr.append(spam_true_count / (threshold_lambda * spam_fn_count + spam_fp_count))
 
+            #LAGAY SA CSV
+            data = [filter_config, lambda_current, num_of_top_attributes]
+
             print 'RESULTS'
             print_value = (sum(spam_recall)/float(len(spam_recall)))*100
+            data.append(print_value)
             print 'Spam Recall: %.2f %%' % print_value
             print_value = (sum(spam_precision)/float(len(spam_precision)))*100
+            data.append(print_value)
             print 'Spam Precision: %.2f %%'  % print_value
             print_value = (sum(weighted_accuracy)/len(weighted_accuracy))*100
+            data.append(print_value)
             print 'Weighted Accuracy: %.2f %%' % print_value
             print_value = (sum(baseline_weighted_accuracy)/len(baseline_weighted_accuracy))*100
+            data.append(print_value)
             print 'Baseline Weighted Accuaracy: %.2f %%' % print_value
             print_value = (sum(tcr)/len(tcr))
+            data.append(print_value)
             print 'TCR: %.2f \n' % print_value
 
+            csv_data_list.append(data)
+
             num_of_top_attributes += 50 # step of 50
+
+with open('results.csv', 'wb') as fp:
+    a = csv.writer(fp, delimiter=',')
+    a.writerows(csv_data_list)
