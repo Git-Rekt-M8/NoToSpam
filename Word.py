@@ -1,7 +1,9 @@
 class Word:
     def __init__(self):
-        self.spamOccurence = 0
-        self.hamOccurence = 0
+        self.content = ''
+        self.spamOccurence = 0.0
+        self.hamOccurence = 0.0
+        self.mutualInfo = 0.0
 
 
     def addToSpamOccur(self, n):
@@ -21,3 +23,16 @@ class Word:
 
     def setHamOccur(self, n):
         self.hamOccurence = n
+
+    def getMutualInfo(self):
+        return self.mutualInfo
+
+    def setMutualInfo(self, n):
+        self.mutualInfo = n
+
+    def getContent(self):
+        return self.content
+
+    def setContent(self, n):
+        self.content = n
+

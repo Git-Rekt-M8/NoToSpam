@@ -1,12 +1,19 @@
 import os
 import re
+import math
+
+import operator
+import itertools
+
+from decimal import Decimal
 from random import randint
 
 from Word import Word
 
 words_dic = {}
-spam_count = 0
-ham_count = 0
+attribs_dic = {}
+spam_count = 0.0
+ham_count = 0.0
 
 # Load Data
 def load_files():
@@ -15,7 +22,7 @@ def load_files():
 
     email_dir = 'emails/bare'
     # 10-fold cross validation means repeat 10 times: divide data into 10, use 9 for training, 1 for testing
-    test_folder = 1 # randint(1, 10)
+    test_folder = 1
     print test_folder
 
     for num in range(1, 11):
@@ -45,6 +52,7 @@ def train(content, email_type):
         word_obj = words_dic.get(word, None)
         if word_obj is None:
             word_obj = Word()
+            word_obj.setContent(word)
 
         if email_type == 'spam':
             word_obj.addToSpamOccur(1)
@@ -53,13 +61,55 @@ def train(content, email_type):
         words_dic[word] = word_obj
 
 
+def compute():
+    total = ham_count + spam_count
+    for key, value in words_dic.iteritems():
+        spam_occur = value.getSpamOccur()
+        spam_notoccur = spam_count - spam_occur
+        ham_occur = value.getHamOccur()
+        ham_notoccur = total - value.getHamOccur()
+        # print Decimal((total * ham_occur) / ((spam_occur + ham_occur) * (ham_occur + ham_notoccur)))
+        try:
+            mutual_info = (spam_occur / total) * math.log((total * spam_occur) / ((spam_occur + ham_occur) * (spam_occur + spam_notoccur)))
+        except:
+            mutual_info = 0.0
+
+        try:
+            mutual_info += (spam_notoccur / total) * math.log((total * spam_notoccur) / ((spam_notoccur + ham_notoccur) * (spam_occur + spam_notoccur)))
+        except:
+            mutual_info += 0.0
+
+        try:
+            mutual_info += (ham_occur / total) * math.log((total * ham_occur) / ((spam_occur + ham_occur) * (ham_occur + ham_notoccur)))
+        except:
+            mutual_info += 0.0
+
+        try:
+            mutual_info += (ham_notoccur / total) * math.log((total * ham_notoccur) / ((spam_notoccur + ham_notoccur) * (ham_occur + ham_notoccur)))
+        except:
+            mutual_info += 0.0
+        # print mutual_info
+        words_dic[key].setMutualInfo(mutual_info)
+
+
+def getTopAttribs(n):
+    sorted_dic = sorted(words_dic.values(), key=lambda word: word.mutualInfo, reverse=True)
+    top_n = sorted_dic[:n]
+    for word in top_n:
+        attribs_dic[word.getContent()] = word
+        print str(word.getContent()) + ' = ' + str(word.getMutualInfo())
+    return attribs_dic
+
 def getWordsFromEmail(content):
-    content = re.sub(r'[^\w\s]', '', content)
+    #content = re.sub(r'[^\w\s]', '', content)
+    content = re.sub('[^a-zA-Z]+', ' ', content)
     content = content.lower()
     return content.split()
 
 # MAIN
 load_files()
+compute()
+getTopAttribs(50)
 #print words_dic['Subject'].getSpamOccur()
 #print "Value : %d" %  words_dic['subject'].getSpamOccur()
 #print spam_count
