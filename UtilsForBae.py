@@ -24,8 +24,6 @@ def computeProbabilityForListOfWords(attribs_dic, word_list, email_type):
         multiplicand = 1.0
         if email_type == 'spam':
             multiplicand = word_obj.getSpamProbability()
-            print 'sex'
-            print multiplicand
         else:
             multiplicand = word_obj.getHamProbability()
 
@@ -35,11 +33,11 @@ def computeProbabilityForListOfWords(attribs_dic, word_list, email_type):
         #     print 'daan'
 
         # print 'm: %.2f' % multiplicand
-        print 'mul'
-        print multiplicand
+        # print 'mul'
+        # print multiplicand
         answer = answer * multiplicand
-        print  'ans'
-        print answer
+        # print  'ans'
+        # print answer
         # print 'a: %.2f' % answer
 
         # if answer is 0.00:

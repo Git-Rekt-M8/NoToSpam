@@ -148,10 +148,6 @@ def testEmail(test_email):
     word_spam_prob = bae.computeProbabilityForListOfWords(attribs_dic, word_list, "spam")
     word_ham_prob = bae.computeProbabilityForListOfWords(attribs_dic, word_list, "ham")
 
-    print 'pakyu ol'
-    print word_spam_prob
-    print word_ham_prob
-
     email_type = "spam"
 
     baye_probability = bae.computeBayesianProbability(SPAM_PROBABILITY, HAM_PROBABILITY, word_spam_prob, word_ham_prob,
