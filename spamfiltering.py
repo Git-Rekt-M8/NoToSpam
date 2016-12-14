@@ -137,7 +137,7 @@ def checkSpamHam(threshold, prob_spam):
     return 'ham'
 
 def testEmail(test_email):
-    email_file = open('emails/bare' + "/part1" + "/" + test_email, "r")
+    email_file = open(test_email, "r")
     content = email_file.read()
     word_list = getWordsFromEmail(content)
     word_list = set(word_list)  # remove duplicates
@@ -160,11 +160,14 @@ def testEmail(test_email):
     #get bayesian
 
 # MAIN
-test_folder_index = 1
-init(test_folder_index)
+# for each folder
+for num in range(1, 11):
+    test_folder_index = num
+    init(test_folder_index)
 
-for filename in os.listdir(email_dir + part_folder + str(test_folder_index)):
-    testEmail(filename)
+    #for each email
+    for filename in os.listdir(email_dir + part_folder + str(test_folder_index)):
+        testEmail(email_dir + part_folder + str(test_folder_index) + "/" + filename)
 
 
 #print "Value : %f" %  words_dic['hello'].getHamProbability()
