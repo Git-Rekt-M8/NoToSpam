@@ -18,6 +18,7 @@ spam_count = 0
 ham_count = 0
 word_list = ['hi']
 attribs_dic = {}
+threshold_lambda = 1.0
 spam_count = 0.0
 ham_count = 0.0
 
@@ -130,6 +131,12 @@ def getWordsFromEmail(content):
     content = content.lower()
     return content.split()
 
+def checkSpamHam(threshold, prob_spam):
+    t = threshold / (threshold + 1)
+    if (prob_spam > t):
+        return 'spam'
+    return 'ham'
+
 def testEmail(test_email):
     email_file = open('emails/bare' + "/part1" + "/" + test_email, "r")
     content = email_file.read()
@@ -153,10 +160,12 @@ def testEmail(test_email):
 
     print 'answer??'
     print baye_probability
+    print checkSpamHam(threshold_lambda, baye_probability)
+
     #get bayesian
 
 # MAIN
-test_folder_index = 1;
+test_folder_index = 1
 init(test_folder_index)
 testEmail("spmsga101.txt")
 
