@@ -31,35 +31,13 @@ def computeProbabilityForListOfWords(attribs_dic, word_list, email_type):
 
         if isWordIncluded is False:
             multiplicand = 1.0 - multiplicand
-            # print 'grr'
-        # else:
-        #     print 'daan'
-
-        # print email_type
-        # print word_obj.getSpamProbability()
-        # print word_obj.getHamProbability()
-        # print multiplicand
         answer += math.log(multiplicand)
-        # print  'ans'
-        # print answer
-
-        # if answer is 0.00:
-        #     exit()
 
     return answer
 
 def computeBayesianProbability(spam_prob, ham_prob, word_spam_prob, word_ham_prob, email_type):
 
     if email_type is 'spam':
-        # print 'word spam'
-        # print word_spam_prob
-        # print 'spam_prob'
-        # print spam_prob
-        # print 'word ham'
-        # print word_ham_prob
-        # print 'ham prob'
-        # print ham_prob
-        # return word_spam_prob + log(spam_prob)
         return word_spam_prob + math.log(spam_prob) - numpy.logaddexp(word_spam_prob + math.log(spam_prob), word_ham_prob + math.log(ham_prob) )
     else:
         return (word_ham_prob * ham_prob) / (word_ham_prob * ham_prob + word_spam_prob * spam_prob)
@@ -82,19 +60,6 @@ def printy(attribs_dic, word_list, email_type):
 
         if isWordIncluded is False:
             multiplicand = 1.0 - multiplicand
-            # print 'grr'
-        # else:
-        #     print 'daan'
-
-        # print email_type
-        # print word_obj.getSpamProbability()
-        # print word_obj.getHamProbability()
-        # print 'mult ' + str(multiplicand)
         answer = answer * multiplicand
-        # print  'ans'
-        #print 'ans ' + str(answer)
-
-        # if answer is 0.00:
-        #     exit()
 
     return answer
