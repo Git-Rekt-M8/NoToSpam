@@ -205,7 +205,7 @@ def testEmail(test_email):
 # MAIN
 filter_types = ['bare','lemm','lemm_stop','stop']
 lambda_values = [1,9,999]
-max_num_of_top_attributes = 50
+max_num_of_top_attributes = 700
 
 for lambda_current in lambda_values:
     #for each filter type
