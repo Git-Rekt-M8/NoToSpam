@@ -165,7 +165,7 @@ def getWordsFromEmail(content):
 
 def checkSpamHam(threshold, prob_spam):
     t = threshold / (threshold + 1)
-    if (prob_spam > t):
+    if (prob_spam > math.log(t)):
         return 'spam'
     return 'ham'
 
@@ -201,7 +201,7 @@ def testEmail(test_email):
 # MAIN
 filter_types = ['bare','lemm','lemm_stop','stop']
 lambda_values = [1,9,999]
-max_num_of_top_attributes = 150
+max_num_of_top_attributes = 50
 
 for lambda_current in lambda_values:
     #for each filter type
