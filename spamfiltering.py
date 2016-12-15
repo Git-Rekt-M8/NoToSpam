@@ -119,7 +119,7 @@ def train(content, email_type, words_dic_index):
             word_obj.addToSpamOccur(1)
         else:
             word_obj.addToHamOccur(1)
-        words_dic_list[words_dic_index][word] = word_obj #SKETCHY
+        words_dic_list[words_dic_index][word] = word_obj
 
 
 def computeMI(words_dic_index):
@@ -247,10 +247,8 @@ for filter_config in filter_types:
 
                 spam_recall.append(spam_correct_count / (spam_correct_count + spam_fn_count))
                 spam_precision.append(spam_correct_count / (spam_correct_count + spam_fp_count))
-                weighted_accuracy.append((threshold_lambda * ham_correct_count + spam_correct_count) / (
-                threshold_lambda * ham_true_count + spam_true_count))
-                baseline_weighted_accuracy.append(
-                    (threshold_lambda * ham_true_count) / (threshold_lambda * ham_true_count + spam_true_count))
+                weighted_accuracy.append((threshold_lambda * ham_correct_count + spam_correct_count) / (threshold_lambda * ham_true_count + spam_true_count))
+                baseline_weighted_accuracy.append((threshold_lambda * ham_true_count) / (threshold_lambda * ham_true_count + spam_true_count))
                 tcr.append(spam_true_count / (threshold_lambda * spam_fp_count + spam_fn_count))
 
             # PLACE IN CSV FILE
