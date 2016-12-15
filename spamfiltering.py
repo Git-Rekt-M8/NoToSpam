@@ -169,7 +169,7 @@ def getWordsFromEmail(content):
 
 def checkSpamHam(threshold, prob_spam):
     t = threshold / (threshold + 1)
-    if (prob_spam > t):
+    if (prob_spam > math.log(t)):
         return 'spam'
     return 'ham'
 
